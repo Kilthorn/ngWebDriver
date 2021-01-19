@@ -1,0 +1,17 @@
+load("@rules_jvm_external//:defs.bzl", "artifact")
+
+java_library(name = "ngwebdriver",
+
+  srcs=glob(["*.java"]),
+
+  deps=[
+    "//src/main/resources:resources",
+    artifact("org.seleniumhq.selenium:selenium-api"),
+    artifact("org.seleniumhq.selenium:selenium-remote-driver"),
+    artifact("org.seleniumhq.selenium:selenium-support")
+  ],
+
+  visibility=["//src/test/java/com/paulhammant/ngwebdriver:__pkg__"]
+
+)
+

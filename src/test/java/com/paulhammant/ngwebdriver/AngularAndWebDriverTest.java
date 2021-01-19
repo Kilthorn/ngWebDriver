@@ -1,21 +1,11 @@
 package com.paulhammant.ngwebdriver;
 
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.MovedContextHandler;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.StdErrLog;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.junit.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.seleniumhq.selenium.fluent.*;
-import org.testng.annotations.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,47 +17,31 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.openqa.selenium.By.*;
-import static org.testng.Assert.assertEquals;
-import static org.testng.AssertJUnit.fail;
 
 public class AngularAndWebDriverTest {
 
-    private ChromeDriver driver;
-    private Server webServer;
-    private NgWebDriver ngWebDriver;
+    private static ChromeDriver driver;
+    private static Server webServer;
+    private static NgWebDriver ngWebDriver;
 
-    @BeforeSuite
-    public void before_suite() throws Exception {
-
-        // Launch Protractor's own test app on http://localhost:8080
-        ((StdErrLog) Log.getRootLogger()).setLevel(StdErrLog.LEVEL_OFF);
-        webServer = new Server(new QueuedThreadPool(6));
-        ServerConnector connector = new ServerConnector(webServer, new HttpConnectionFactory());
-        connector.setPort(8080);
-        webServer.addConnector(connector);
-        ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setDirectoriesListed(true);
-        resource_handler.setWelcomeFiles(new String[]{"index.html"});
-        resource_handler.setResourceBase("src/test/webapp");
-        HandlerList handlers = new HandlerList();
-        MovedContextHandler effective_symlink = new MovedContextHandler(webServer, "/lib/angular", "/lib/angular_v1.2.9");
-        handlers.setHandlers(new Handler[] { effective_symlink, resource_handler, new DefaultHandler() });
-        webServer.setHandler(handlers);
-        webServer.start();
+    @BeforeClass
+    public static void before_suite() throws Exception {
 
         driver = new ChromeDriver();
         driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);
         ngWebDriver = new NgWebDriver(driver);
     }
 
-    @AfterSuite
-    public void after_suite() throws Exception {
+    @AfterClass
+    public static void after_suite() throws Exception {
         driver.quit();
         webServer.stop();
     }
 
-    @BeforeMethod
+    @Before
     public void resetBrowser() {
         driver.get("about:blank");
     }
@@ -83,7 +57,7 @@ public class AngularAndWebDriverTest {
     public void find_by_angular_model() {
 
         //driver.get("http://www.angularjshub.com/code/examples/basics/02_TwoWayDataBinding_HTML/index.demo.php");
-        driver.get("http://localhost:8080/");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/");
         ngWebDriver.waitForAngularRequestsToFinish();
 
         WebElement firstname = driver.findElement(ByAngular.model("username"));
@@ -96,7 +70,7 @@ public class AngularAndWebDriverTest {
     @Test
     public void find_all_for_an_angular_options() {
 
-        driver.get("http://localhost:8080/#/form");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/#/form");
         ngWebDriver.waitForAngularRequestsToFinish();
 
         List<WebElement> weColors = driver.findElements(ByAngular.options("fruit for fruit in fruits"));
@@ -107,7 +81,7 @@ public class AngularAndWebDriverTest {
     @Test
     public void find_by_angular_buttonText() {
 
-        driver.get("http://localhost:8080/#/form");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/#/form");
         ngWebDriver.waitForAngularRequestsToFinish();
 
         driver.findElement(ByAngular.buttonText("Open Alert")).click();
@@ -118,7 +92,7 @@ public class AngularAndWebDriverTest {
     @Test
     public void find_by_angular_partialButtonText() {
 
-        driver.get("http://localhost:8080/#/form");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/#/form");
         ngWebDriver.waitForAngularRequestsToFinish();
 
         driver.findElement(ByAngular.partialButtonText("Alert")).click();
@@ -129,7 +103,7 @@ public class AngularAndWebDriverTest {
     @Test
     public void find_by_angular_cssContainingText() {
 
-        driver.get("http://localhost:8080/#/form");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/#/form");
         ngWebDriver.waitForAngularRequestsToFinish();
 
         List<WebElement> wes = driver.findElements(ByAngular.cssContainingText("#animals ul .pet", "dog"));
@@ -137,10 +111,11 @@ public class AngularAndWebDriverTest {
         assertThat(wes.get(1).getText(), containsString("small dog"));
     }
 
-    @Test(enabled = true)
+    @Test()
+    @Ignore
     public void find_by_angular_cssContainingTextRegexp() {
 
-        driver.get("http://localhost:8080/#/form");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/#/form");
         ngWebDriver.waitForAngularRequestsToFinish();
 
         List<WebElement> wes = driver
@@ -217,7 +192,8 @@ public class AngularAndWebDriverTest {
 
     }
 
-    @Test(enabled = false)
+    @Test()
+    @Ignore
     public void find_specific_cell_in_ng_repeat() {
 
         driver.get("http://www.angularjshub.com/code/examples/collections/01_Repeater/index.demo.php");
@@ -228,7 +204,8 @@ public class AngularAndWebDriverTest {
         assertThat(driver.findElement(xpath("//tr[@byNg-repeat='person in selectablePeople']")).getText(), is("x y z"));
     }
 
-    @Test(enabled = false)
+    @Test()
+    @Ignore
     public void find_specific_cell_in_ng_repeat_the_other_way() {
 
         driver.get("http://www.angularjshub.com/code/examples/collections/01_Repeater/index.demo.php");
@@ -240,7 +217,8 @@ public class AngularAndWebDriverTest {
         assertThat(driver.findElement(xpath("//tr[@byNg-repeat='person in selectablePeople']")).getText(), is("x y z"));
     }
 
-    @Test(enabled = false)
+    @Test()
+    @Ignore
     public void find_all_of_a_column_in_an_ng_repeat() {
 
         driver.get("http://www.angularjshub.com/code/examples/collections/01_Repeater/index.demo.php");
@@ -257,7 +235,7 @@ public class AngularAndWebDriverTest {
     @Test
     public void find_by_angular_binding() {
 
-        driver.get("http://localhost:8080/#/form");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/#/form");
         ngWebDriver.waitForAngularRequestsToFinish();
 
         // An example showcasing ByBinding, where we give a substring of the binding attribute
@@ -480,7 +458,7 @@ public class AngularAndWebDriverTest {
         for (int i = 0; i < 20; ++i) {
             resetBrowser();
 
-            driver.get("http://localhost:8080/index.html#/form");
+            driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/index.html#/form");
             ngWebDriver.waitForAngularRequestsToFinish();
             FluentWebElement usernameInput = fwd.input(ByAngular.model("username"));
             FluentWebElement name = fwd.span(ByAngular.binding("username"));
@@ -497,7 +475,7 @@ public class AngularAndWebDriverTest {
     @Test
     public void altRoot_find_elements() {
         FluentWebDriver fwd = new FluentWebDriver(driver);
-        driver.get("http://localhost:8080/alt_root_index.html#/form");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/alt_root_index.html#/form");
         ngWebDriver.waitForAngularRequestsToFinish();
 
 
@@ -513,7 +491,7 @@ public class AngularAndWebDriverTest {
     @Test
     public void basic_actions() throws java.lang.InterruptedException {
         FluentWebDriver fwd = new FluentWebDriver(driver);
-        driver.get("http://localhost:8080/index.html#/form");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/index.html#/form");
         ngWebDriver.waitForAngularRequestsToFinish();
 
         FluentWebElement sliderBar = fwd.input(By.name("points"));
@@ -537,7 +515,7 @@ public class AngularAndWebDriverTest {
     @Test
     public void basic_elements_should_chain_with_index_correctly() {
         FluentWebDriver fwd = new FluentWebDriver(driver);
-        driver.get("http://localhost:8080/index.html");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/index.html");
         ngWebDriver.waitForAngularRequestsToFinish();
 
         fwd.inputs(By.cssSelector("#checkboxes input")).last(new IsIndex2Or3()).click();
@@ -561,7 +539,7 @@ public class AngularAndWebDriverTest {
         FluentWebDriver fwd = new FluentWebDriver(driver);
         driver.manage().window().maximize();
 
-        driver.get("http://localhost:8080/index.html#/conflict");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/index.html#/conflict");
 
         ngWebDriver.waitForAngularRequestsToFinish();
 
@@ -582,7 +560,7 @@ public class AngularAndWebDriverTest {
     public void basic_elements_should_allow_using_repeater_locator_within_map() {
         FluentWebDriver fwd = new FluentWebDriver(driver);
 
-        driver.get("http://localhost:8080/index.html#/repeater");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/index.html#/repeater");
 
         ngWebDriver.waitForAngularRequestsToFinish();
 
@@ -613,7 +591,7 @@ public class AngularAndWebDriverTest {
     public void basic_locators_by_repeater_should_find_by_partial_match() {
         FluentWebDriver fwd = new FluentWebDriver(driver);
 
-        driver.get("http://localhost:8080/index.html#/repeater");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/index.html#/repeater");
 
         fwd.span(ByAngular.repeater("baz in days | filter:'T'").row(0).column("baz.initial")).getText().shouldBe("T");
 
@@ -637,7 +615,7 @@ public class AngularAndWebDriverTest {
     public void basic_locators_by_repeater_should_find_many_rows_by_partial_match() {
         FluentWebDriver fwd = new FluentWebDriver(driver);
 
-        driver.get("http://localhost:8080/index.html#/repeater");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/index.html#/repeater");
 
         FluentWebElements spans = fwd.spans(ByAngular.repeater("baz in days | filter:'T'").column("baz.initial"));
         spans.getText().shouldBe("TTh");
@@ -668,7 +646,7 @@ public class AngularAndWebDriverTest {
     public void basic_locators_by_repeater_should_find_one_row_by_partial_match() {
         FluentWebDriver fwd = new FluentWebDriver(driver);
 
-        driver.get("http://localhost:8080/index.html#/repeater");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/index.html#/repeater");
 
         fwd.li(ByAngular.repeater("baz in days | filter:'T'").row(0)).getText().shouldBe("T");
         fwd.li(ByAngular.repeater("baz in days | filter:'T'").row(1)).getText().shouldBe("Th");
@@ -694,7 +672,7 @@ public class AngularAndWebDriverTest {
     public void basic_locators_by_repeater_should_find_many_rows_by_partial_match2() {
         FluentWebDriver fwd = new FluentWebDriver(driver);
 
-        driver.get("http://localhost:8080/index.html#/repeater");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/index.html#/repeater");
 
         ngWebDriver.waitForAngularRequestsToFinish();
 
@@ -727,7 +705,7 @@ public class AngularAndWebDriverTest {
     public void basic_locators_by_repeater_should_find_single_rows_by_partial_match() {
         FluentWebDriver fwd = new FluentWebDriver(driver);
 
-        driver.get("http://localhost:8080/index.html#/repeater");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/index.html#/repeater");
 
         fwd.li(ByAngular.repeater("baz in days | filter:'T'")).getText().shouldBe("T");
 
@@ -751,7 +729,7 @@ public class AngularAndWebDriverTest {
     public void basic_lib_getLocationAbsUrl_gets_url() {
         FluentWebDriver fwd = new FluentWebDriver(driver);
 
-        driver.get("http://localhost:8080/index.html");
+        driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/index.html");
 
         assertThat(ngWebDriver.getLocationAbsUrl(), endsWith("/form"));
 

@@ -1,0 +1,7 @@
+java_library(
+  name="resources",
+  resources=["js/clientsidescripts.js"],
+
+  visibility=["//src/main/java/com/paulhammant/ngwebdriver:__pkg__"]
+
+)

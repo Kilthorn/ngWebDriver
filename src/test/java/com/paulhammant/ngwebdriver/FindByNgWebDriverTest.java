@@ -3,11 +3,11 @@ package com.paulhammant.ngwebdriver;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.testng.Assert.fail;
+import static org.junit.Assert.fail;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.pagefactory.Annotations;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 public class FindByNgWebDriverTest {
 
