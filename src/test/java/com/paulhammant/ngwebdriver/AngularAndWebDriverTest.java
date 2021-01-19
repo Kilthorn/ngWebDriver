@@ -1,6 +1,5 @@
 package com.paulhammant.ngwebdriver;
 
-import org.eclipse.jetty.server.Server;
 import org.junit.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -24,7 +23,6 @@ import static org.openqa.selenium.By.*;
 public class AngularAndWebDriverTest {
 
     private static ChromeDriver driver;
-    private static Server webServer;
     private static NgWebDriver ngWebDriver;
 
     @BeforeClass
@@ -38,7 +36,6 @@ public class AngularAndWebDriverTest {
     @AfterClass
     public static void after_suite() throws Exception {
         driver.quit();
-        webServer.stop();
     }
 
     @Before
@@ -520,7 +517,7 @@ public class AngularAndWebDriverTest {
 
         fwd.inputs(By.cssSelector("#checkboxes input")).last(new IsIndex2Or3()).click();
 
-        fwd.span(By.cssSelector("#letterlist")).getText().shouldBe("'x'");
+        fwd.span(By.cssSelector("#letterlist")).getText().shouldBe("x");
 
     }
 
@@ -592,6 +589,7 @@ public class AngularAndWebDriverTest {
         FluentWebDriver fwd = new FluentWebDriver(driver);
 
         driver.get("https://paul-hammant.github.io/ngWebDriver-test-harness/index.html#/repeater");
+        ngWebDriver.waitForAngularRequestsToFinish();
 
         fwd.span(ByAngular.repeater("baz in days | filter:'T'").row(0).column("baz.initial")).getText().shouldBe("T");
 

@@ -21,7 +21,5 @@ java_test(name="AngularAndWebDriverTest",
         artifact("org.seleniumhq.selenium:selenium-support"),
         artifact("org.seleniumhq.selenium:selenium-chrome-driver"),
         artifact("org.seleniumhq.selenium.fluent:fluent-selenium"),
-        artifact("org.eclipse.jetty:jetty-server"),
-        artifact("org.eclipse.jetty:jetty-util"),
         "//src/main/java/com/paulhammant/ngwebdriver:ngwebdriver"]
 )

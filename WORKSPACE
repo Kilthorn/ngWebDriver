@@ -21,7 +21,6 @@ maven_install(
         "org.testng:testng:6.14.3",
         "junit:junit:4.13.1",
         "org.seleniumhq.selenium:selenium-java:4.0.0-alpha-3",
-        "org.eclipse.jetty:jetty-server:9.4.24.v20191120"
     ],
     repositories = [
         # Private repositories are supported through HTTP Basic auth
