@@ -15,6 +15,7 @@ http_archive(
 load("@rules_jvm_external//:defs.bzl", "maven_install")
 
 maven_install(
+    name="ngwebdriver-maven-install",
     artifacts = [
         "org.hamcrest:hamcrest-library:1.3",
         "org.seleniumhq.selenium.fluent:fluent-selenium:1.21",
@@ -27,4 +28,8 @@ maven_install(
         "https://maven.google.com",
         "https://repo1.maven.org/maven2",
     ],
+    maven_install_json = "//:maven_install.json",
 )
+
+load("@maven//:defs.bzl", "pinned_maven_install")
+pinned_maven_install()
